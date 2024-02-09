@@ -128,7 +128,7 @@ def balance_dataset(input_csv, output_csv, output_folder='balanced_augmented_dat
 
             for _, row in class_data.iterrows():
                 csv_file.write(f"{row['image']},{row['label']}\n")
-
+    load_data(output_csv)
 if __name__ == "__main__":
     # To run the data augmentation
     og_data = load_data("images_labeled.csv")
