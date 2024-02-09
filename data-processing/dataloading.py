@@ -14,6 +14,7 @@ class CustomDataset(Dataset):
             img_dir (string): Directory with all the images.
             transform (callable, optional): Optional transform to be applied
                 on a sample.
+            base_dir (string): path of base directory.
         """
         self.data_frame = pd.read_csv(csv_file)
         self.base_dir = base_dir
@@ -35,6 +36,21 @@ class CustomDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
+        # Map class names to numerical labels
+        self.class_to_label = {
+            'dew': 0,
+            'fogsmog': 1,
+            'frost': 2,
+            'glaze': 3,
+            'hail': 4,
+            'lightning': 5,
+            'rain': 6,
+            'rainbow': 7,
+            'rime': 8,
+            'sandstorm': 9,
+            'snow': 10
+        }
+        label = self.class_to_label[label]
         return image, label
 
 def load_data(train_csv, val_csv, test_csv, base_dir='./', augment=False, balance_classes=False):
@@ -72,11 +88,12 @@ def setup_dataloaders(train_csv='data-csvs/train_images_labeled.csv', val_csv='d
 
 # Test the dataloaders
 if __name__ == "__main__":
-    train_loader, val_loader, test_loader = setup_dataloaders(balance_classes=True, augment=True)
+    train_loader, val_loader, test_loader = setup_dataloaders(balance_classes=False, augment=False)
     print(f"Train batches: {len(train_loader)}")
     print(f"Validation batches: {len(val_loader)}")
     print(f"Test batches: {len(test_loader)}")
     for i, (images, labels) in enumerate(train_loader):
         print(f"Batch {i} - Images: {len(images)}, Labels: {len(labels)}")
+        print(f"Image Shape: {images[0].shape}, Label: {labels[0]}")
         if i == 2:
             break
