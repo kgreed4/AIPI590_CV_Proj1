@@ -4,3 +4,5 @@ dataset/
 augmented_dataset/
 balanced_augmented_dataset/
 .DS_Store
+og_dataset/
+data-processing/__pycache__/
