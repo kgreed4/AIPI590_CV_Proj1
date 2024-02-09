@@ -11,6 +11,7 @@ def initialize_model(num_classes=11):
     for param in model.features.parameters():
         param.requires_grad = False
     
+    print(model.classifier)
     # Replace the classifier of the VGG model
     num_features = model.classifier[6].in_features
     model.classifier[6] = nn.Linear(num_features, num_classes)
@@ -67,15 +68,18 @@ if __name__ == "__main__":
     model = model.to(device)
     print(f"Model moved to {device}")
 
-    # Define the loss function and optimizer
     # set up data loaders
-
+    train_loader, val_loader, test_loader = setup_dataloaders(balance_classes=False, augment=False)
     dataloaders = {
         'train': train_loader,
         'val': val_loader,
         'test': test_loader
     }
 
+    # Define the loss function and optimizer
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+
     # Train the model
-    model_ft = train_model(model, dataloaders, criterion, optimizer, num_epochs=25)
+    model_ft = train_model(model, dataloaders, criterion, optimizer, num_epochs=1)
 
