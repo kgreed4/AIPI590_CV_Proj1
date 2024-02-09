@@ -63,8 +63,8 @@ def load_data(train_csv, val_csv, test_csv, base_dir='./', augment=False, balanc
 
     return train_dataset, val_dataset, test_dataset
 
-def setup_dataloaders(train_csv='data-csvs/train_images_labeled.csv', val_csv='data-csvs/valid_images_labeled.csv', test_csv='data-csvs/test_images_labeled.csv', batch_size=32):
-    train_dataset, val_dataset, test_dataset = load_data(train_csv, val_csv, test_csv, augment=False, balance_classes=False)
+def setup_dataloaders(train_csv='data-csvs/train_images_labeled.csv', val_csv='data-csvs/valid_images_labeled.csv', test_csv='data-csvs/test_images_labeled.csv', batch_size=32, augment=False, balance_classes=False):
+    train_dataset, val_dataset, test_dataset = load_data(train_csv, val_csv, test_csv, augment=augment, balance_classes=balance_classes)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
@@ -72,7 +72,7 @@ def setup_dataloaders(train_csv='data-csvs/train_images_labeled.csv', val_csv='d
 
 # Test the dataloaders
 if __name__ == "__main__":
-    train_loader, val_loader, test_loader = setup_dataloaders()
+    train_loader, val_loader, test_loader = setup_dataloaders(balance_classes=True, augment=True)
     print(f"Train batches: {len(train_loader)}")
     print(f"Validation batches: {len(val_loader)}")
     print(f"Test batches: {len(test_loader)}")

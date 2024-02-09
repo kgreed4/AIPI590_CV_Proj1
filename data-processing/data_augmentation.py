@@ -20,6 +20,8 @@ def load_data(data_csv):
 def augment_data(input_csv, output_csv, output_folder='augmented_dataset'):
     '''
     data augmentation
+    input_csv: CSV with columns ['image', 'label'] representing the dataset.
+    output_csv: Path to the CSV file to store paths and labels of the balanced dataset.
     '''
     data = load_data(input_csv)
     # define the augmentation pipeline
@@ -42,7 +44,7 @@ def augment_data(input_csv, output_csv, output_folder='augmented_dataset'):
                 augmented = transform(image=image)
                 new_image = augmented['image']
                 new_image = cv2.cvtColor(new_image, cv2.COLOR_RGB2BGR)  # Convert back to BGR for OpenCV saving
-                new_filename = row['image'].replace("dataset", output_folder).replace('.jpg', f'_aug.jpg')
+                new_filename = row['image'].replace('.jpg', f'_aug.jpg')
                 # Ensure the directory for the new file exists
                 new_dir = os.path.dirname(new_filename)
                 if not os.path.exists(new_dir):
@@ -52,16 +54,16 @@ def augment_data(input_csv, output_csv, output_folder='augmented_dataset'):
             else:
                 print(f"Error reading file {row['image']}")
 
-def balance_dataset(data, output_csv, output_folder='balanced_augmented_dataset', target_samples=None, buffer_ratio=0.2):
+def balance_dataset(input_csv, output_csv, output_folder='balanced_augmented_dataset', target_samples=None, buffer_ratio=0.2):
     '''
     Balance the class distribution in a dataset through data augmentation for under-represented classes
     and downsampling for over-represented classes, adjusting the target based on a post-augmentation buffer.
-    data: DataFrame with columns ['filepath', 'label'] representing the dataset.
+    input_csv: CSV with columns ['image', 'label'] representing the dataset.
     output_csv: Path to the CSV file to store paths and labels of the balanced dataset.
     target_samples: Optional. The target number of samples per class before considering the buffer.
     buffer_ratio: Fraction to adjust the target_samples after augmentation to allow for a buffer.
     '''
-
+    data = load_data(input_csv)
     # Define the augmentation pipeline
     transform = A.Compose([
         A.HorizontalFlip(p=0.8),
@@ -98,7 +100,7 @@ def balance_dataset(data, output_csv, output_folder='balanced_augmented_dataset'
                         augmented = transform(image=image)
                         new_image = augmented['image']
                         new_image = cv2.cvtColor(new_image, cv2.COLOR_RGB2BGR)
-                        new_filename = row['image'].replace("dataset", output_folder).replace('.jpg', f'_aug_bal{n}.jpg')
+                        new_filename = row['image'].replace('.jpg', f'_aug_bal{n}.jpg')
                         new_dir = os.path.dirname(new_filename)
                         if not os.path.exists(new_dir):
                             os.makedirs(new_dir)
