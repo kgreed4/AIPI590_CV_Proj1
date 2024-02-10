@@ -6,6 +6,7 @@ from dataloading import setup_dataloaders
 import copy
 import matplotlib.pyplot as plt
 import os
+from torchsummary import summary  
 
 
 def initialize_model(num_classes=11):
@@ -15,10 +16,20 @@ def initialize_model(num_classes=11):
         param.requires_grad = False
     
     print(model.classifier)
-    # Replace the classifier of the VGG model
-    num_features = model.classifier[6].in_features
-    model.classifier[6] = nn.Linear(num_features, num_classes)
-    
+    summary(model, torch.zeros(1,3,224,224))
+
+    model.avgpool = nn.AdaptiveAvgPool2d(output_size=(1,1))
+
+    # # Replace the classifier of the VGG model
+    model.classifier = nn.Sequential(nn.Flatten(),
+    nn.Linear(512, 128),
+    nn.ReLU(),
+    nn.Dropout(0.2),
+    nn.Linear(128, 11))
+
+    print(model.classifier)
+    summary(model, torch.zeros(1,3,224,224))
+ 
     return model
 
 def train_model(model, dataloaders, criterion, optimizer, num_epochs=15, patience=3, filename='best_VGG.pth'):
@@ -85,8 +96,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs=15, patienc
                 best_model_wts = copy.deepcopy(model.state_dict())
                 epochs_no_improve = 0  # Reset counter
                 # Save the model
-                print(f"Saving model to {filename}")
-                torch.save(model.state_dict(), os.path.join('model_results', filename))
+                print(f"Saving model to models_saved/{filename}")
+                torch.save(model.state_dict(), os.path.join('models_saved', f'{filename}_{epoch}.pth'))
             elif phase == 'val':
                 epochs_no_improve += 1
 
@@ -120,13 +131,19 @@ if __name__ == "__main__":
 
     # Define the loss function and optimizer
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
+    epohs = 50
+    earlystopping = 8
 
+    #Run Name
+    description = 'VGG16_Transfer_Learning_0001_aug_bal'
+    
     # Train the model
-    model_ft, train_loss, val_loss, train_acc, val_acc = train_model(model, dataloaders, criterion, optimizer, num_epochs=15, patience=4, filename='VGG_balanced_augmented.pth')
+    model_ft, train_loss, val_loss, train_acc, val_acc = train_model(model, dataloaders, criterion, optimizer, num_epochs=epohs, patience=earlystopping, filename= description)
+   
 
     # Save the training and validation losses to a txt file
-    with open(os.path.join('model_results','VGG_training.txt'), 'w') as f:
+    with open(os.path.join('model_results',f'{description}.txt'), 'w') as f:
         for i in range(len(train_loss)):
             f.write(f"Epoch {i+1} - Train Loss: {train_loss[i]} - Val Loss: {val_loss[i]} - Train Acc: {train_acc[i]} - Val Acc: {val_acc[i]}\n")
 
@@ -139,13 +156,14 @@ if __name__ == "__main__":
     plt.legend()
     plt.title('Loss for VGG16 Transfer Learning Model on Weather Images')
     plt.show()
+    plt.savefig(os.path.join('model_results',f'{description}_loss.png'))
 
     # Plot the training and validation accuracy
-    plt.figure(1)
-    plt.plot(train_acc.cpu(), label='Training accuracy')
-    plt.plot(val_acc.cpu(), label='Validation accuracy')
-    plt.xlabel('Epoch')
-    plt.ylabel('Accuracy')
-    plt.legend()
-    plt.title('Accuracy for VGG16 Transfer Learning Model on Weather Images')
-    plt.show()
+    # plt.figure(1)
+    # plt.plot(train_acc.cpu(), label='Training accuracy')
+    # plt.plot(val_acc.cpu(), label='Validation accuracy')
+    # plt.xlabel('Epoch')
+    # plt.ylabel('Accuracy')
+    # plt.legend()
+    # plt.title('Accuracy for VGG16 Transfer Learning Model on Weather Images')
+    # plt.show()
