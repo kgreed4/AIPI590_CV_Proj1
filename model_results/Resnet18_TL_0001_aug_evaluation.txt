@@ -1,0 +1,6 @@
+Model: Resnet18_TL_0001_aug
+Accuracy: 0.8645
+Precision: 0.8657
+Recall: 0.8645
+F1-score: 0.8647
+

@@ -1,0 +1,6 @@
+Model: VGG16_TL_0001
+Accuracy: 0.8769
+Precision: 0.8770
+Recall: 0.8769
+F1-score: 0.8763
+
