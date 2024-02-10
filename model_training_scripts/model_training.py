@@ -139,7 +139,7 @@ if __name__ == "__main__":
     print(f"Model moved to {device}")
 
     # set up data loaders
-    train_loader, val_loader, test_loader = setup_dataloaders(balance_classes=False, augment=True)
+    train_loader, val_loader, test_loader = setup_dataloaders(balance_classes=False, augment=False)
     dataloaders = {
         'train': train_loader,
         'val': val_loader,
@@ -153,7 +153,7 @@ if __name__ == "__main__":
     earlystopping = 8
 
     #Run Name
-    description = 'Resnet18_Transfer_Learning_0001_aug'
+    description = 'Resnet18_Transfer_Learning_0001'
     
     # Train the model
     model_ft, train_loss, val_loss, train_acc, val_acc = train_model(model, dataloaders, criterion, optimizer, num_epochs=epohs, patience=earlystopping, filename= description)
