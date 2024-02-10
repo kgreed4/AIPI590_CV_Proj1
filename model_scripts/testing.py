@@ -61,18 +61,18 @@ def test_model(model_path, test_loader, model_name):
         pred_probs.extend(softmax_probs.cpu().numpy())
 
 
-    print('pred labels 1', pred_labels)
+    # print('pred labels 1', pred_labels)
 
     # Unmap numerical labels to original class names
     true_labels = [class_to_label[label] for label in true_labels]
-    print(true_labels)
-    for label in pred_labels:
-    #   print('preds class', class_to_label)
-        print('preds label', class_to_label[label])
+    # print(true_labels)
+    # for label in pred_labels:
+    # #   print('preds class', class_to_label)
+    #     print('preds label', class_to_label[label])
     pred_labels = [class_to_label[label] for label in pred_labels]
 
     # Convert true and predicted labels to one-hot encoding
-    true_labels_onehot = label_binarize(true_labels, classes=class_to_label.values())
+    true_labels_onehot = label_binarize(true_labels, classes=list(class_to_label.values()))
     pred_probs = np.array(pred_probs)
 
     # Compute overall accuracy, precision, recall, and F1-score
@@ -82,7 +82,7 @@ def test_model(model_path, test_loader, model_name):
     f1 = f1_score(true_labels, pred_labels, average='weighted')
 
     # Write evaluation metrics to a text file
-    evaluation_file = f"{model_name}_evaluation.txt"
+    evaluation_file = f"model_results/{model_name}_evaluation.txt"
     with open(evaluation_file, 'w') as f:
         f.write(f"Model: {model_name}\n")
         f.write(f"Accuracy: {accuracy:.4f}\n")
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     filepath = './models_saved/'
 
     # Load the model, specifying map_location to load it on GPU
-    state_dict = torch.load(os.path.join(filepath, 'Resnet18_Transfer_Learning_0001_26.pth'), map_location=torch.device('cuda'))
+    state_dict = torch.load(os.path.join(filepath, 'Resnet18_Transfer_Learning_0001_aug_34.pth'), map_location=torch.device('cuda'))
 
     # Instance
     # model = models.resnet18(pretrained=True)
@@ -182,4 +182,4 @@ if __name__ == "__main__":
         data, target = data.to(device), target.to(device)
         test_data.append((data, target))
 
-    test_model(model, test_data, 'Resnet18_TL_0001')
+    test_model(model, test_data, 'Resnet18_TL_0001_aug')
