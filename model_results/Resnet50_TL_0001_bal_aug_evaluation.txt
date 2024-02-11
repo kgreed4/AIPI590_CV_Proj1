@@ -1,0 +1,6 @@
+Model: Resnet50_TL_0001_bal_aug
+Accuracy: 0.8704
+Precision: 0.8712
+Recall: 0.8704
+F1-score: 0.8702
+
