@@ -4,3 +4,6 @@ dataset/
 augmented_dataset/
 balanced_augmented_dataset/
 .DS_Store
+og_dataset/
+model_scripts/__pycache__/
+models_saved/

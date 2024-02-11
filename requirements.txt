@@ -1,2 +1,4 @@
 matplotlib
 albumentations
+torch
+torchvision
