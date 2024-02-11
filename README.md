@@ -1,4 +1,4 @@
-# AIPI590_CV_Proj1
+# AIPI590 Computer Vision Project 1 - Scene Classification
 This project outlines using pre-trained CNNs (ResNet and VGG) and Transfer Learning to classify weather images. 
 
 ## Data
