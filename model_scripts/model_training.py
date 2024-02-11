@@ -30,7 +30,7 @@ def initialize_model(num_classes=11, model_name="vgg16"):
 
         print(model.classifier)
 
-    if model_name == "resnet18":
+    elif model_name == "resnet18":
         model = models.resnet18(pretrained=True)
         summary(model, torch.zeros(1,3,224,224))
         for param in model.parameters():
@@ -45,6 +45,22 @@ def initialize_model(num_classes=11, model_name="vgg16"):
         nn.ReLU(),
         nn.Dropout(0.2),
         nn.Linear(128, 11))
+
+    elif model_name == "resnet50":
+        model = models.resnet50(pretrained=True)
+        summary(model, torch.zeros(1,3,224,224))
+        for param in model.parameters():
+            param.requires_grad = False
+
+        # Modify pooling layer
+        model.avgpool = nn.AdaptiveAvgPool2d(output_size=(1,1))
+
+        # Replace last FC layer
+        model.fc = nn.Sequential(nn.Flatten(),
+        nn.Linear(2048, 256),
+        nn.ReLU(),
+        nn.Dropout(0.2),
+        nn.Linear(256, 11))
 
     summary(model, torch.zeros(1,3,224,224))
     return model
@@ -130,7 +146,7 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs=15, patienc
 
 if __name__ == "__main__":
     num_classes = 11
-    model = initialize_model(num_classes, model_name="resnet18")
+    model = initialize_model(num_classes, model_name="resnet50")
     print(model)
 
     # Move the model to GPU if available
@@ -139,7 +155,7 @@ if __name__ == "__main__":
     print(f"Model moved to {device}")
 
     # set up data loaders
-    train_loader, val_loader, test_loader = setup_dataloaders(balance_classes=False, augment=False)
+    train_loader, val_loader, test_loader = setup_dataloaders(balance_classes=True, augment=True)
     dataloaders = {
         'train': train_loader,
         'val': val_loader,
@@ -149,11 +165,11 @@ if __name__ == "__main__":
     # Define the loss function and optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
-    epohs = 50
+    epohs = 70
     earlystopping = 8
 
     #Run Name
-    description = 'Resnet18_Transfer_Learning_0001'
+    description = 'Resnet50_0001_bal_aug'
     
     # Train the model
     model_ft, train_loss, val_loss, train_acc, val_acc = train_model(model, dataloaders, criterion, optimizer, num_epochs=epohs, patience=earlystopping, filename= description)
@@ -171,7 +187,7 @@ if __name__ == "__main__":
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.legend()
-    plt.title('Loss for ResNet18 Transfer Learning Model on Weather Images')
+    plt.title('Loss for ResNet50 Transfer Learning Model on Weather Images')
     plt.show()
     plt.savefig(os.path.join('model_results',f'{description}_loss.png'))
 
