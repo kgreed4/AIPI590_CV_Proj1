@@ -1,0 +1,6 @@
+Model: Resnet50_TL_0001
+Accuracy: 0.8813
+Precision: 0.8831
+Recall: 0.8813
+F1-score: 0.8817
+
